@@ -7,7 +7,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>@yield('title', config('app.name', 'Laravel'))</title>
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
@@ -28,8 +28,14 @@
             </script>
     @endif
 
-    <!-- Styles -->
+    <meta name="description" content="Sync your Google Reminders to Todoist automatically, for free.">
+    <meta property="og:image" content="{{ asset('img/cover.jpg') }}">
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:creator" content="@atymic" />
+    <meta property="og:title" content="Sync your Google Reminders to Todoist automatically, for free" />
+
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+    @stack('head')
 </head>
 <body class="bg-gray-50 h-screen antialiased leading-none">
 <div id="app h-full">

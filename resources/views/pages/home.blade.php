@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Google Reminder to Todoist Sync')
+
 @section('content')
     <div class="bg-gray-50 h- overflow-hidden">
             <div class="mt-8 mx-auto max-w-screen-xl px-4 sm:mt-12 sm:px-6 md:mt-20 xl:mt-24">
