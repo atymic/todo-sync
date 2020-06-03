@@ -35,6 +35,23 @@ class SyncUserReminders implements ShouldQueue
      */
     public function handle()
     {
+        try {
+            $this->sync();
+        } catch (\Exception $exception) {
+            Log::error(sprintf('Failed to sync for user %d', $this->user->id), [
+                'trace' => $exception->getTraceAsString(),
+            ]);
+
+            // TODO alert the user that their sync was turned off?
+
+            $this->user->update([
+                'sync_enabled' => false,
+            ]);
+        }
+    }
+
+    private function sync()
+    {
         $reminderClient = $this->user->getGoogleReminderClient();
         $todoistClient = $this->user->getTodoistClient();
         $reminders = $reminderClient->listReminders($this->user->timezone);
