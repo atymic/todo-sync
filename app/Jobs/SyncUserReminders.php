@@ -11,6 +11,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 
 class SyncUserReminders implements ShouldQueue
@@ -63,7 +64,9 @@ class SyncUserReminders implements ShouldQueue
         });
 
         if ($todoistTasks->isNotEmpty()) {
-            $todoistClient->createTasks($todoistTasks->toArray());
+            $todoistTasks->chunk(90)->each(function (Collection $chunk) use ($todoistClient) {
+                $todoistClient->createTasks($chunk->toArray());
+            });
         }
 
         if ($this->user->google_reminders === GoogleRemoveSetting::IMMEDIATE) {
