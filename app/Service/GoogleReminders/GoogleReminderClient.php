@@ -139,13 +139,15 @@ class GoogleReminderClient
 
             $createdAt = Carbon::createFromTimestampMs($r['18']);
             $done = array_key_exists('8', $r) && $r['8'] === 1;
+            $repeating = array_key_exists('16', $r);
 
             return new GoogleReminder(
                 $id,
                 $title,
                 $remindAt,
                 $createdAt,
-                $done
+                $done,
+                $repeating
             );
         } catch (\Exception $KeyError) {
             echo('build_reminder failed: unrecognized reminder dictionary format');

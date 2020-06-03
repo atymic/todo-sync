@@ -27,19 +27,25 @@ class GoogleReminder
      * @var bool
      */
     public $done;
+    /**
+     * @var bool
+     */
+    public $repeating;
 
     public function __construct(
         string $id,
         string $title,
         Carbon $remindAt,
         Carbon $createdAt = null,
-        bool $done = false
+        bool $done = false,
+        bool $isRepeating = false
     ) {
         $this->id = $id;
         $this->title = $title;
         $this->remindAt = $remindAt;
         $this->createdAt = $createdAt;
         $this->done = $done;
+        $this->repeating = $isRepeating;
     }
 
     public function __toString()

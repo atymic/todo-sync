@@ -44,7 +44,10 @@ class SyncUserReminders implements ShouldQueue
             return;
         }
 
-        $tasksToSync = $reminders->filter()->where('done', false);
+        $tasksToSync = $reminders
+            ->filter()
+            ->where('repeating', false)
+            ->where('done', false);
 
         if ($this->user->google_reminders === GoogleRemoveSetting::AFTER_TIME) {
             $alreadySynced = $this->user->syncItems()->pluck('google_id');
