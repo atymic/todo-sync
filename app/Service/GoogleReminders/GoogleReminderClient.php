@@ -84,22 +84,31 @@ class GoogleReminderClient
     }
 
 
-    private function listReminderRequestBody($num_reminders, $max_timestamp_msec = 0)
-    {
+    private function listReminderRequestBody(
+        int $maxReminders,
+        ?int $maxTimeStampMillis = null,
+        $excludeRecurrent = true
+    ) {
         /*
         The body corresponds to a request that retrieves a maximum of num_reminders reminders,
         whose creation timestamp is less than max_timestamp_msec.
         max_timestamp_msec is a unix timestamp in milliseconds.
         if its value is 0, treat it as current time.
         */
-        $body = (object) [
+        $body = [
             '5' => 1,  // boolean field: 0 or 1. 0 doesn't work ¯\_(ツ)_/¯
-            '6' => $num_reminders,  // number of reminders to retrieve
+            '6' => $maxReminders,  // number of reminders to retrieve
         ];
 
-        if ($max_timestamp_msec) {
-            $max_timestamp_msec += (int) (15 * 3600 * 1000);
-            $body['16'] = $max_timestamp_msec;
+        if ($excludeRecurrent) {
+            $body['13'] = [
+                '1' => 1,
+            ];
+        }
+
+        if ($maxTimeStampMillis) {
+            $maxTimeStampMillis += (int) (15 * 3600 * 1000);
+            $body['16'] = $maxTimeStampMillis;
             /*
             Empirically, when requesting with a certain timestamp, reminders with the given timestamp
             or even a bit smaller timestamp are not returned.
