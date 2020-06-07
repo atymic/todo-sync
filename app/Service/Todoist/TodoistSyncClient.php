@@ -21,7 +21,7 @@ class TodoistSyncClient
 
     public function createTasks(array $tasks): array
     {
-        $commands = array_map([$this, 'mapTaskToCommand'], $tasks);
+        $commands = array_values(array_map([$this, 'mapTaskToCommand'], $tasks));
 
         $res = Http::post(self::API_ENDPOINT, [
             'token' => $this->apiToken,

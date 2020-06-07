@@ -13,6 +13,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
+use Sentry;
+use Sentry\Breadcrumb;
 
 class SyncUserReminders implements ShouldQueue
 {
@@ -54,6 +56,13 @@ class SyncUserReminders implements ShouldQueue
 
     private function sync()
     {
+        Sentry::addBreadcrumb(new Breadcrumb(
+            Breadcrumb::LEVEL_DEBUG,
+            Breadcrumb::TYPE_HTTP,
+            'sync-starting',
+            $this->user->id
+        ));
+
         $reminderClient = $this->user->getGoogleReminderClient();
         $todoistClient = $this->user->getTodoistClient();
         $reminders = $reminderClient->listReminders($this->user->timezone);
@@ -87,7 +96,14 @@ class SyncUserReminders implements ShouldQueue
 
         if ($todoistTasks->isNotEmpty()) {
             $todoistTasks->chunk(90)->each(function (Collection $chunk) use ($todoistClient) {
-                $todoistClient->createTasks($chunk->toArray());
+                $todoistRes = $todoistClient->createTasks($chunk->toArray());
+                Sentry::addBreadcrumb(new Breadcrumb(
+                    Breadcrumb::LEVEL_DEBUG,
+                    Breadcrumb::TYPE_HTTP,
+                    'todoist-res',
+                    null,
+                    $todoistRes
+                ));
             });
         }
 
