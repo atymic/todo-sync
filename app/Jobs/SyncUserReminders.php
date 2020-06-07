@@ -38,7 +38,9 @@ class SyncUserReminders implements ShouldQueue
         try {
             $this->sync();
         } catch (\Exception $exception) {
+            report($exception);
             Log::error(sprintf('Failed to sync for user %d', $this->user->id), [
+                'message' => $exception->getMessage(),
                 'trace' => $exception->getTraceAsString(),
             ]);
 

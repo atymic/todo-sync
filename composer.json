@@ -20,6 +20,7 @@
     "laravel/socialite": "^4.3",
     "laravel/tinker": "^2.0",
     "laravel/ui": "^2.0",
+    "sentry/sentry-laravel": "^1.8",
     "socialiteproviders/todoist": "^3.0",
     "spatie/data-transfer-object": "^1.13"
   },
