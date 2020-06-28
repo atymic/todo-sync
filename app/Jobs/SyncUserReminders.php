@@ -12,6 +12,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Sentry;
 use Sentry\Breadcrumb;
@@ -46,11 +47,19 @@ class SyncUserReminders implements ShouldQueue
                 'trace' => $exception->getTraceAsString(),
             ]);
 
-            // TODO alert the user that their sync was turned off?
+            $failKey = sprintf('sync:failcount:todo:%s', $this->user->id);
+            $fails = Cache::get($failKey, 0);
+            if ($fails > 3) {
+                $this->user->update([
+                    'sync_enabled' => false,
+                ]);
 
-            $this->user->update([
-                'sync_enabled' => false,
-            ]);
+                return;
+            }
+
+            Cache::put($failKey, $fails + 1, now()->addMinutes(10));
+
+            // TODO alert the user that their sync was turned off?
         }
     }
 
