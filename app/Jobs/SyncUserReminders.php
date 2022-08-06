@@ -68,6 +68,7 @@ class SyncUserReminders implements ShouldQueue
         Sentry::addBreadcrumb(new Breadcrumb(
             Breadcrumb::LEVEL_DEBUG,
             Breadcrumb::TYPE_HTTP,
+            'sync',
             'sync-starting',
             ['id' => $this->user->id]
         ));
