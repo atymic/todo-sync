@@ -69,7 +69,7 @@ class SyncUserReminders implements ShouldQueue
             Breadcrumb::LEVEL_DEBUG,
             Breadcrumb::TYPE_HTTP,
             'sync-starting',
-            $this->user->id
+            ['id' => $this->user->id]
         ));
 
         $reminderClient = $this->user->getGoogleReminderClient();
