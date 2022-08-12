@@ -73,6 +73,8 @@ class SyncUserReminders implements ShouldQueue
             ['id' => $this->user->id]
         ));
 
+        Log::debug('SYNC_START', ['user' => $this->user->id]);
+
         $reminderClient = $this->user->getGoogleReminderClient();
         $todoistClient = $this->user->getTodoistClient();
         $reminders = $reminderClient->listReminders($this->user->timezone);
@@ -118,6 +120,7 @@ class SyncUserReminders implements ShouldQueue
         }
 
         if ($this->user->google_reminders === GoogleRemoveSetting::IMMEDIATE) {
+            Log::debug('SYNC_DELETE', ['user' => $this->user->id, 'tasks' => $tasksToSync->count()]);
             $tasksToSync->each(function (GoogleReminder $reminder) use ($reminderClient) {
                 $reminderClient->deleteReminder($reminder->id);
             });
@@ -135,12 +138,14 @@ class SyncUserReminders implements ShouldQueue
             );
         }
 
+        Log::debug('SYNC_FINISH', ['user' => $this->user->id, 'tasks' => $tasksToSync->count()]);
+
         Sentry::addBreadcrumb(new Breadcrumb(
             Breadcrumb::LEVEL_DEBUG,
             Breadcrumb::TYPE_HTTP,
             'sync',
             'sync-finished',
-            ['id' => $this->user->id]
+            ['id' => $this->user->id, 'tasks' => $tasksToSync->count()]
         ));
     }
 }
