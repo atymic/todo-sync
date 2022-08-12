@@ -49,6 +49,7 @@ class GoogleReminderClient
         );
 
         if ($response->getStatusCode() !== 200) {
+            \Log::debug('ERR fetching reminders', ['code' => $response->getStatusCode(), 'expired' => $this->client->isAccessTokenExpired()]);
             return null;
         }
 
